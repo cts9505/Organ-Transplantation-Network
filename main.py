@@ -1,10 +1,19 @@
 from flask import Flask,render_template,session,request,redirect,url_for,flash
 import mysql.connector,hashlib
-import matplotlib.pyplot as plt
-import numpy as np
 import os
 import sys
 from dotenv import load_dotenv
+
+# Optional imports for statistics (may not be available in serverless)
+try:
+    import matplotlib
+    matplotlib.use('Agg')  # Use non-interactive backend for serverless
+    import matplotlib.pyplot as plt
+    import numpy as np
+    MATPLOTLIB_AVAILABLE = True
+except ImportError:
+    MATPLOTLIB_AVAILABLE = False
+    print("⚠️  matplotlib not available - statistics charts will be disabled")
 
 # Load environment variables from .env file
 load_dotenv()
@@ -15,29 +24,53 @@ DB_USER = os.getenv('DB_USER', 'root')
 DB_PASS = os.getenv('DB_PASSWORD', 'root')
 DB_NAME = os.getenv('DB_NAME', 'DBMS_PROJECT')
 
-try:
-    mydb = mysql.connector.connect(
-        host=DB_HOST,
-        user=DB_USER,
-        password=DB_PASS,
-        database=DB_NAME
-    )
-    mycursor = mydb.cursor(buffered=True)
-    print(f'✅ Successfully connected to MySQL database: {DB_NAME}')
-except mysql.connector.Error as e:
-    print('\n❌ ERROR: Unable to connect to MySQL database.')
-    print('Details:', e)
-    print('\nPlease ensure:')
-    print('1. MySQL is running')
-    print('2. Database credentials in .env file are correct')
-    print('3. Database DBMS_PROJECT exists')
-    print('\nCurrent configuration:')
-    print(f'  Host: {DB_HOST}')
-    print(f'  User: {DB_USER}')
-    print(f'  Database: {DB_NAME}')
-    sys.exit(1)
-
+# Initialize Flask app
 app = Flask(__name__)
+app.secret_key = os.getenv('FLASK_SECRET_KEY', 'sec key')
+app.config['SESSION_TYPE'] = 'filesystem'
+
+# Database connection pool (lazy initialization)
+mydb = None
+mycursor = None
+
+def get_db_connection():
+    """Get database connection (creates if not exists)"""
+    global mydb, mycursor
+    try:
+        # Check if connection exists and is alive
+        if mydb is not None:
+            mydb.ping(reconnect=True)
+            return mydb, mycursor
+    except:
+        pass
+    
+    # Create new connection
+    try:
+        mydb = mysql.connector.connect(
+            host=DB_HOST,
+            user=DB_USER,
+            password=DB_PASS,
+            database=DB_NAME,
+            autocommit=True
+        )
+        mycursor = mydb.cursor(buffered=True)
+        print(f'✅ Successfully connected to MySQL database: {DB_NAME}')
+        return mydb, mycursor
+    except mysql.connector.Error as e:
+        print('\n❌ ERROR: Unable to connect to MySQL database.')
+        print('Details:', e)
+        print('\nCurrent configuration:')
+        print(f'  Host: {DB_HOST}')
+        print(f'  User: {DB_USER}')
+        print(f'  Database: {DB_NAME}')
+        raise
+
+@app.before_request
+def before_request():
+    """Initialize database connection before each request"""
+    global mydb, mycursor
+    if mydb is None or mycursor is None:
+        mydb, mycursor = get_db_connection()
 
 @app.route("/",methods = ['POST', 'GET'])
 @app.route("/home",methods = ['POST','GET'])
@@ -2175,10 +2208,6 @@ def admin_all_transactions():
                          rejected_transactions=rejected_transactions)
 
 if __name__ == "__main__":
-    # Load Flask configuration from environment variables
-    app.secret_key = os.getenv('FLASK_SECRET_KEY', 'sec key')
-    app.config['SESSION_TYPE'] = 'filesystem'
-    
     # Get debug mode from environment (default: True for development)
     debug_mode = os.getenv('FLASK_DEBUG', 'True').lower() in ('true', '1', 'yes')
     
