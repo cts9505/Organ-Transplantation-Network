@@ -3,3 +3,5 @@ mysql-connector-python
 python-dotenv
 matplotlib
 numpy
+gunicorn
+pymysql

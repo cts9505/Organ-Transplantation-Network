@@ -10,11 +10,13 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ============================================================
 -- 1. LOGIN DATA (already has admin/admin from schema)
 -- ============================================================
-INSERT INTO login (username, password) VALUES 
-('alice', 'pass123'),
-('bob', 'pass456'),
-('charlie', 'pass789'),
-('diana', 'pass000');
+-- Note: User_ID links login credentials to User table
+-- admin has User_ID = NULL (system admin, not a patient/donor)
+INSERT INTO login (username, password, User_ID) VALUES 
+('alice', 'pass123', 101),
+('bob', 'pass456', 102),
+('charlie', 'pass789', 103),
+('diana', 'pass000', 104);
 
 -- ============================================================
 -- 2. USER DATA

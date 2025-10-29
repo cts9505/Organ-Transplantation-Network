@@ -46,3 +46,12 @@ flask_session/
 
 # Logs
 *.log
+
+# Deployment
+.vercel
+.netlify
+node_modules/
+
+# Docker
+.dockerignore
+docker-compose.override.yml

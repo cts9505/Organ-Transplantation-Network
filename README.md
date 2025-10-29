@@ -235,6 +235,27 @@ python3 main.py
 
 The application will start on `http://127.0.0.1:5000/`
 
+### Serverless Deployment
+
+This application is ready for serverless deployment! See **[SERVERLESS_DEPLOYMENT.md](SERVERLESS_DEPLOYMENT.md)** for detailed instructions on deploying to:
+
+- 🚀 **Vercel** (Recommended)
+- 🎨 **Netlify**
+- 🚂 **Railway** (Easiest with built-in database)
+- 🎯 **Render**
+- 💜 **Heroku**
+- ☁️ **AWS Lambda**
+- 🐳 **Docker** (Self-hosted)
+- And more!
+
+**Quick Deploy to Railway:**
+```bash
+npm i -g @railway/cli
+railway login
+railway init
+railway up
+```
+
 ### Default Login Credentials
 
 **Admin:**

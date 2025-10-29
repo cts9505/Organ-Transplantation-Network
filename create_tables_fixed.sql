@@ -9,16 +9,7 @@ USE DBMS_PROJECT;
 -- TABLE DEFINITIONS
 -- ============================================================
 
--- Login table (no PK defined - consider adding username as PK if needed)
-CREATE TABLE login(
-    username VARCHAR(20) NOT NULL,
-    password VARCHAR(20) NOT NULL,
-    PRIMARY KEY(username)
-) ENGINE=InnoDB;
-
-INSERT INTO login VALUES ('admin','admin');
-
--- Table 1: User
+-- Table 1: User (must come before login table due to FK)
 CREATE TABLE User(
     User_ID INT NOT NULL,
     Name VARCHAR(20) NOT NULL,
@@ -30,6 +21,17 @@ CREATE TABLE User(
     State VARCHAR(20),
     PRIMARY KEY(User_ID)
 ) ENGINE=InnoDB;
+
+-- Login table (links users to their login credentials)
+CREATE TABLE login(
+    username VARCHAR(20) NOT NULL,
+    password VARCHAR(20) NOT NULL,
+    User_ID INT,
+    PRIMARY KEY(username),
+    FOREIGN KEY(User_ID) REFERENCES User(User_ID) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+INSERT INTO login VALUES ('admin','admin', NULL);
 
 -- Table 2: User phone numbers
 CREATE TABLE User_phone_no(
