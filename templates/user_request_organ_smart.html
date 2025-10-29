@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Organ Request - Organ Transplantation Network</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+        }
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .back-btn:hover {
+            background: #5568d3;
+        }
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background: white;
+        }
+        .alert-warning {
+            background: #fefcbf;
+            color: #744210;
+            border-left: 4px solid #ed8936;
+        }
+        .alert-warning a {
+            color: #c05621;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+        .patient-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .patient-card h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .patient-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .info-item {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .info-label {
+            color: #718096;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            color: #2d3748;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .matches-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .matches-section h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+        .match-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .match-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .match-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        .match-score {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .match-score.high {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+        .match-score.medium {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+        }
+        .match-score.low {
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+        }
+        .match-card h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 20px;
+            padding-right: 80px;
+        }
+        .match-detail {
+            display: flex;
+            align-items: start;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .match-detail-label {
+            color: #718096;
+            font-weight: 600;
+            min-width: 120px;
+        }
+        .match-detail-value {
+            color: #2d3748;
+            flex: 1;
+        }
+        .request-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 15px;
+            transition: transform 0.3s;
+        }
+        .request-btn:hover {
+            transform: scale(1.02);
+        }
+        .no-matches {
+            text-align: center;
+            padding: 60px 20px;
+            color: #718096;
+        }
+        .no-matches-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        .stats-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            color: #718096;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .compatibility-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .badge-excellent {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        .badge-good {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+        .badge-fair {
+            background: #feebc8;
+            color: #7c2d12;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Smart Organ Matching System</h1>
+            <a href="/user/dashboard" class="back-btn">← Back to Dashboard</a>
+        </div>
+
+        {% if not patient_data %}
+        <div class="alert alert-warning">
+            ⚠️ You need to register as a patient first before requesting organs.
+            <div style="margin-top: 10px;">
+                <a href="/user/register_patient">→ Click here to register as a patient</a>
+            </div>
+        </div>
+        {% else %}
+        
+        <div class="patient-card">
+            <h2>👤 Your Patient Profile</h2>
+            <div class="patient-info">
+                <div class="info-item">
+                    <div class="info-label">Patient ID</div>
+                    <div class="info-value">{{ patient_data[0] }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Organ Needed</div>
+                    <div class="info-value">🫀 {{ patient_data[1] }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Medical Condition</div>
+                    <div class="info-value">{{ patient_data[2] if patient_data[2] else 'Not specified' }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Assigned Doctor</div>
+                    <div class="info-value">{{ patient_data[3] if patient_data[3] else 'Not assigned' }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Hospital</div>
+                    <div class="info-value">{{ patient_data[4] if patient_data[4] else 'N/A' }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Registration Status</div>
+                    <div class="info-value" style="color: #48bb78;">✓ Active</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Organ Catalog Section -->
+        <div class="matches-section" style="margin-top: 20px;">
+            <h2>🫀 All Organ Types Available for Donation ({{ organ_catalog|length if organ_catalog else 0 }} Types)</h2>
+            {% if organ_catalog and organ_catalog|length > 0 %}
+            <div class="match-grid">
+                {% for organ in organ_catalog %}
+                <div class="match-card" style="border-left: 4px solid #667eea;">
+                    <h3 style="padding-right: 20px;">🫀 {{ organ[0] }}</h3>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Available Organs:</div>
+                        <div class="match-detail-value" style="color: #667eea; font-weight: 600; font-size: 20px;">{{ organ[1] }}</div>
+                    </div>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Total Donors:</div>
+                        <div class="match-detail-value" style="color: #48bb78; font-weight: 600;">{{ organ[2] }}</div>
+                    </div>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Available At:</div>
+                        <div class="match-detail-value" style="font-size: 13px;">{{ organ[3] if organ[3] else 'Various locations' }}</div>
+                    </div>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Status:</div>
+                        <div class="match-detail-value" style="color: #48bb78; font-weight: 600;">✓ Ready for Transplant</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-matches">
+                <p style="color: #718096;">No organs currently available for donation.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-number">{{ total_matches }}</div>
+                <div class="stat-label">Your Compatible Matches</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ organ_catalog|length if organ_catalog else 0 }}</div>
+                <div class="stat-label">Organ Types Available</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ all_patient_requests|length if all_patient_requests else 0 }}</div>
+                <div class="stat-label">Total Patient Requests</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ all_available_donors|length if all_available_donors else 0 }}</div>
+                <div class="stat-label">Total Available Organs</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ patient_data[1] }}</div>
+                <div class="stat-label">You Are Searching For</div>
+            </div>
+        </div>
+
+        <div class="matches-section">
+            <h2>🎯 Your Compatible Matches for {{ patient_data[1] }} Transplant ({{ total_matches }} Found)</h2>
+            
+            {% if matches and matches|length > 0 %}
+            <div class="match-grid">
+                {% for match in matches %}
+                <div class="match-card">
+                    <div class="match-score {{ 'high' if match['compatibility_score'] >= 80 else 'medium' if match['compatibility_score'] >= 60 else 'low' }}">
+                        {{ match['compatibility_score'] }}% Match
+                    </div>
+                    
+                    <h3>💝 {{ match['organ_type'] }} Donor</h3>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Donor:</div>
+                        <div class="match-detail-value">{{ match['donor_name'] }}</div>
+                    </div>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Donor ID:</div>
+                        <div class="match-detail-value">{{ match['donor_id'] }}</div>
+                    </div>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Organ ID:</div>
+                        <div class="match-detail-value">{{ match['organ_id'] }}</div>
+                    </div>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Hospital:</div>
+                        <div class="match-detail-value">{{ match['organization'] }}</div>
+                    </div>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Donation Type:</div>
+                        <div class="match-detail-value">{{ match['donation_type'] if match['donation_type'] else 'Standard donation' }}</div>
+                    </div>
+                    
+                    {% if match['compatibility_score'] >= 80 %}
+                    <span class="compatibility-badge badge-excellent">⭐ Excellent Match</span>
+                    {% elif match['compatibility_score'] >= 60 %}
+                    <span class="compatibility-badge badge-good">✓ Good Match</span>
+                    {% else %}
+                    <span class="compatibility-badge badge-fair">○ Fair Match</span>
+                    {% endif %}
+                    
+                    <form method="POST" action="/user/initiate_transaction" style="margin: 0;">
+                        <input type="hidden" name="patient_id" value="{{ patient_data[0] }}">
+                        <input type="hidden" name="organ_id" value="{{ match['organ_id'] }}">
+                        <input type="hidden" name="donor_id" value="{{ match['donor_id'] }}">
+                        <button type="submit" class="request-btn">
+                            📝 Request This Organ
+                        </button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-matches">
+                <div class="no-matches-icon">🔍</div>
+                <h3>No Compatible Matches Found</h3>
+                <p>We couldn't find any available {{ patient_data[1] if patient_data else 'organ' }} donors at this time.</p>
+                <p style="margin-top: 10px; font-size: 14px;">Please check back later or contact your doctor for more options.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- All Patient Requests Section -->
+        <div class="matches-section" style="margin-top: 20px;">
+            <h2>📋 All Active Patient Requests in Network ({{ all_patient_requests|length if all_patient_requests else 0 }} Total)</h2>
+            {% if all_patient_requests and all_patient_requests|length > 0 %}
+            <div class="match-grid">
+                {% for patient in all_patient_requests %}
+                <div class="match-card" style="border-left: 4px solid #ed8936;">
+                    <h3 style="padding-right: 20px;">🫀 {{ patient[1] }} Request</h3>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Patient:</div>
+                        <div class="match-detail-value">{{ patient[3] }}</div>
+                    </div>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Patient ID:</div>
+                        <div class="match-detail-value">{{ patient[0] }}</div>
+                    </div>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Condition:</div>
+                        <div class="match-detail-value">{{ patient[2] if patient[2] else 'Not specified' }}</div>
+                    </div>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Doctor:</div>
+                        <div class="match-detail-value">{{ patient[5] if patient[5] else 'N/A' }}</div>
+                    </div>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Hospital:</div>
+                        <div class="match-detail-value">{{ patient[6] if patient[6] else 'N/A' }}</div>
+                    </div>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Insurance:</div>
+                        <div class="match-detail-value">{{ '✓ Yes' if patient[4] == 1 else '✗ No' }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-matches">
+                <p style="color: #718096;">No active patient requests found.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- All Available Donors Section -->
+        <div class="matches-section" style="margin-top: 20px;">
+            <h2>💝 All Available Donors in Network ({{ all_available_donors|length if all_available_donors else 0 }} Total)</h2>
+            {% if all_available_donors and all_available_donors|length > 0 %}
+            <div class="match-grid">
+                {% for donor in all_available_donors %}
+                <div class="match-card" style="border-left: 4px solid #48bb78;">
+                    <h3 style="padding-right: 20px;">💚 {{ donor[1] }} Donor</h3>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Donor:</div>
+                        <div class="match-detail-value">{{ donor[6] }}</div>
+                    </div>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Donor ID:</div>
+                        <div class="match-detail-value">{{ donor[2] }}</div>
+                    </div>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Organ ID:</div>
+                        <div class="match-detail-value">{{ donor[0] }}</div>
+                    </div>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Hospital:</div>
+                        <div class="match-detail-value">{{ donor[7] }}</div>
+                    </div>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Donation Type:</div>
+                        <div class="match-detail-value">{{ donor[4] if donor[4] else 'Standard' }}</div>
+                    </div>
+                    
+                    <div class="match-detail">
+                        <div class="match-detail-label">Status:</div>
+                        <div class="match-detail-value" style="color: #48bb78; font-weight: 600;">✓ Available</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-matches">
+                <p style="color: #718096;">No available donors found.</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        {% endif %}
+    </div>
+</body>
+</html>

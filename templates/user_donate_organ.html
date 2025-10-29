@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donate Organ - Organ Transplantation Network</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+        }
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .back-btn:hover {
+            background: #5568d3;
+        }
+        .hero-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .hero-card h2 {
+            color: #ed8936;
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+        .hero-card p {
+            color: #4a5568;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            color: #4a5568;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ed8936;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .submit-btn {
+            background: #ed8936;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        .submit-btn:hover {
+            background: #dd6b20;
+        }
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+            border-left: 4px solid #48bb78;
+        }
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border-left: 4px solid #f56565;
+        }
+        .donations-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .donation-item {
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ed8936;
+        }
+        .donation-item h4 {
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        .donation-detail {
+            color: #718096;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+        .donation-detail strong {
+            color: #4a5568;
+        }
+        .no-donations {
+            text-align: center;
+            color: #718096;
+            padding: 40px;
+        }
+        .info-box {
+            background: #fef5e7;
+            border-left: 4px solid #ed8936;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .info-box h4 {
+            color: #ed8936;
+            margin-bottom: 10px;
+        }
+        .info-box ul {
+            margin-left: 20px;
+            color: #4a5568;
+        }
+        .info-box li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💝 Donate Organ - Save Lives</h1>
+            <a href="/user/dashboard" class="back-btn">← Back to Dashboard</a>
+        </div>
+
+        <div class="hero-card">
+            <h2>🌟 Be a Hero - Donate Life</h2>
+            <p>Your decision to donate can save or improve the lives of up to 8 people. Register now to become an organ donor and give the gift of life.</p>
+        </div>
+
+        {% if success %}
+        <div class="alert alert-success">
+            ✓ Thank you for registering as an organ donor! Your generosity can save lives.
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="alert alert-error">
+            ✗ Error registering donation. Please check all fields and try again.
+        </div>
+        {% endif %}
+
+        <div class="content-grid">
+            <div class="card">
+                <h2>Register as Donor</h2>
+                
+                <div class="info-box">
+                    <h4>Organs You Can Donate:</h4>
+                    <ul>
+                        <li>Kidney (Living/Deceased)</li>
+                        <li>Liver (Living/Deceased)</li>
+                        <li>Heart (Deceased)</li>
+                        <li>Lung (Deceased)</li>
+                        <li>Pancreas (Deceased)</li>
+                        <li>Cornea (Deceased)</li>
+                    </ul>
+                </div>
+
+                <form method="POST" action="/user/submit_organ_donation">
+                    <div class="alert-info" style="margin-bottom: 20px; padding: 12px; border-radius: 5px; background: #bee3f8; color: #2c5282;">
+                        ℹ️ Your Donor ID will be generated automatically upon registration
+                    </div>
+
+                    <div class="form-group">
+                        <label for="organ_donated">Organ to Donate *</label>
+                        <select id="organ_donated" name="organ_donated" required>
+                            <option value="">-- Select Organ --</option>
+                            <option value="Kidney">Kidney</option>
+                            <option value="Liver">Liver</option>
+                            <option value="Heart">Heart</option>
+                            <option value="Lung">Lung</option>
+                            <option value="Pancreas">Pancreas</option>
+                            <option value="Cornea">Cornea</option>
+                            <option value="Bone Marrow">Bone Marrow</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reason">Reason for Donation *</label>
+                        <select id="reason" name="reason" required>
+                            <option value="">-- Select Reason --</option>
+                            <option value="Living donation">Living Donation</option>
+                            <option value="Deceased donor">Deceased Donor</option>
+                            <option value="Altruistic donation">Altruistic Donation</option>
+                            <option value="Directed donation">Directed Donation</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="organization_id">Hospital/Organization *</label>
+                        <select id="organization_id" name="organization_id" required>
+                            <option value="">-- Select Hospital --</option>
+                            {% for org in organizations %}
+                            <option value="{{ org[0] }}">{{ org[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="submit" class="submit-btn">💝 Register as Donor</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Your Donation History</h2>
+                <div class="donations-list">
+                    {% if my_donations and my_donations|length > 0 %}
+                        {% for donation in my_donations %}
+                        <div class="donation-item">
+                            <h4>{{ donation[1] }} Donation</h4>
+                            <div class="donation-detail">
+                                <strong>Donor ID:</strong> {{ donation[0] }}
+                            </div>
+                            <div class="donation-detail">
+                                <strong>Type:</strong> {{ donation[2] if donation[2] else 'Not specified' }}
+                            </div>
+                            <div class="donation-detail">
+                                <strong>Hospital:</strong> {{ donation[3] if donation[3] else 'Not assigned' }}
+                            </div>
+                            <div class="donation-detail">
+                                <strong>Location:</strong> {{ donation[4] if donation[4] else 'N/A' }}
+                            </div>
+                            <div class="donation-detail">
+                                <strong>Status:</strong> 
+                                <span style="color: {{ '#48bb78' if donation[5] == 1 else '#f56565' }};">
+                                    {{ '✓ Gov Approved' if donation[5] == 1 else '○ Pending Approval' }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="no-donations">
+                            <p>💝 No donation records yet</p>
+                            <p style="font-size: 14px; margin-top: 10px;">Fill the form to register as a donor</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

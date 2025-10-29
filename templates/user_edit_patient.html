@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Patient Details - Organ Transplantation Network</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+        }
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .back-btn:hover {
+            background: #5568d3;
+        }
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .form-section {
+            margin-bottom: 25px;
+        }
+        .form-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .required {
+            color: red;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .submit-btn {
+            background: #48bb78;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            flex: 1;
+        }
+        .submit-btn:hover {
+            background: #38a169;
+        }
+        .unregister-btn {
+            background: #f56565;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            flex: 1;
+        }
+        .unregister-btn:hover {
+            background: #c53030;
+        }
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border-left: 4px solid #f56565;
+        }
+        .alert-warning {
+            background: #feebc8;
+            color: #7c2d12;
+            border-left: 4px solid #ed8936;
+        }
+        .info-box {
+            background: #e6fffa;
+            border-left: 4px solid #38b2ac;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .info-box h4 {
+            color: #234e52;
+            margin-bottom: 5px;
+        }
+        .info-box p {
+            color: #2c7a7b;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✏️ Edit Patient Details</h1>
+            <a href="/user/dashboard" class="back-btn">← Back to Dashboard</a>
+        </div>
+
+        {% if not patient_data %}
+        <div class="alert alert-warning">
+            ⚠️ You are not registered as a patient. Please register first.
+            <div style="margin-top: 10px;">
+                <a href="/user/register_patient" style="color: #7c2d12; font-weight: 600;">→ Click here to register as a patient</a>
+            </div>
+        </div>
+        {% else %}
+
+        {% if error %}
+        <div class="alert alert-error">
+            ❌ {{ error_message if error_message else 'An error occurred. Please try again.' }}
+        </div>
+        {% endif %}
+
+        <div class="info-box">
+            <h4>📋 Update Your Patient Information</h4>
+            <p>You can modify your organ request and medical details below. Note: Patient ID cannot be changed.</p>
+        </div>
+
+        <div class="form-container">
+            <form action="/user/update_patient" method="POST" onsubmit="return validateForm()">
+                
+                <!-- Patient Information -->
+                <div class="form-section">
+                    <h3>Patient Information</h3>
+                    
+                    <div class="form-group">
+                        <label>Patient ID <span class="required">*</span></label>
+                        <input type="text" name="patient_id" value="{{ patient_data[0] }}" readonly style="background: #f7fafc; cursor: not-allowed;">
+                        <small style="color: #718096;">Patient ID cannot be changed</small>
+                    </div>
+                </div>
+
+                <!-- Medical Details -->
+                <div class="form-section">
+                    <h3>Medical Details</h3>
+                    
+                    <div class="form-group">
+                        <label for="organ_req">Organ Required <span class="required">*</span></label>
+                        <select id="organ_req" name="organ_req" required>
+                            <option value="">-- Select Organ --</option>
+                            <option value="Heart" {% if patient_data[1] == 'Heart' %}selected{% endif %}>Heart</option>
+                            <option value="Kidney" {% if patient_data[1] == 'Kidney' %}selected{% endif %}>Kidney</option>
+                            <option value="Liver" {% if patient_data[1] == 'Liver' %}selected{% endif %}>Liver</option>
+                            <option value="Lung" {% if patient_data[1] == 'Lung' %}selected{% endif %}>Lung</option>
+                            <option value="Pancreas" {% if patient_data[1] == 'Pancreas' %}selected{% endif %}>Pancreas</option>
+                            <option value="Cornea" {% if patient_data[1] == 'Cornea' %}selected{% endif %}>Cornea</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reason">Medical Condition / Reason <span class="required">*</span></label>
+                        <textarea id="reason" name="reason" required placeholder="Describe the medical condition requiring organ transplant">{{ patient_data[2] if patient_data[2] else '' }}</textarea>
+                    </div>
+                </div>
+
+                <!-- Doctor Assignment -->
+                <div class="form-section">
+                    <h3>Assigned Doctor</h3>
+                    
+                    <div class="form-group">
+                        <label for="doctor_id">Doctor <span class="required">*</span></label>
+                        <select id="doctor_id" name="doctor_id" required>
+                            <option value="">-- Select Doctor --</option>
+                            {% for doctor in doctors %}
+                            <option value="{{ doctor[0] }}" {% if patient_data[3] == doctor[0] %}selected{% endif %}>
+                                Dr. {{ doctor[1] }} (ID: {{ doctor[0] }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    {% if patient_data[4] %}
+                    <div class="info-box" style="margin-top: 10px;">
+                        <p><strong>Current Doctor:</strong> Dr. {{ patient_data[4] }}</p>
+                        <p><strong>Current Hospital:</strong> {{ patient_data[5] if patient_data[5] else 'N/A' }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Buttons -->
+                <div class="button-group">
+                    <button type="submit" class="submit-btn">💾 Save Changes</button>
+                </div>
+            </form>
+
+            <!-- Unregister Form -->
+            <form action="/user/unregister_patient" method="POST" onsubmit="return confirmUnregister()" style="margin-top: 15px;">
+                <div class="button-group">
+                    <button type="submit" class="unregister-btn">🗑️ Unregister as Patient</button>
+                </div>
+                <small style="color: #718096; display: block; margin-top: 10px; text-align: center;">
+                    ⚠️ Warning: This will permanently delete your patient registration. You cannot unregister if you have pending transactions.
+                </small>
+            </form>
+        </div>
+
+        {% endif %}
+    </div>
+
+    <script>
+        function validateForm() {
+            const organ = document.getElementById('organ_req').value;
+            const reason = document.getElementById('reason').value;
+            const doctor = document.getElementById('doctor_id').value;
+
+            if (!organ || !reason || !doctor) {
+                alert('Please fill in all required fields (*)');
+                return false;
+            }
+
+            if (reason.length < 10) {
+                alert('Please provide a detailed medical condition (at least 10 characters)');
+                return false;
+            }
+
+            return confirm('Are you sure you want to update your patient details?');
+        }
+
+        function confirmUnregister() {
+            return confirm('⚠️ WARNING: Are you absolutely sure you want to unregister as a patient?\n\nThis action will:\n- Delete your patient record permanently\n- Remove you from the organ request system\n- Cannot be undone\n\nClick OK only if you are certain.');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History - Organ Transplantation Network</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+        }
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .back-btn:hover {
+            background: #5568d3;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        tbody tr:hover {
+            background: #f7fafc;
+        }
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .status-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        .status-pending {
+            background: #fef3c7;
+            color: #78350f;
+        }
+        .status-failed {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        /* Transaction Cards */
+        .transactions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .transaction-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+        .transaction-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+        }
+        .transaction-card.approved {
+            border-left-color: #48bb78;
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+        }
+        .transaction-card.pending {
+            border-left-color: #f59e0b;
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        }
+        .transaction-card.rejected {
+            border-left-color: #f56565;
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+        }
+        .transaction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(0,0,0,0.1);
+        }
+        .organ-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .organ-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .organ-id {
+            color: #718096;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .transaction-date {
+            color: #4a5568;
+            font-size: 14px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .transaction-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .detail-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        .detail-section h4 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .donor-section {
+            border: 2px solid #48bb78;
+            background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%);
+        }
+        .donor-section-minimal {
+            background: #f7fafc;
+            border: 1px solid #cbd5e0;
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .detail-item.full-width {
+            grid-column: 1 / -1;
+        }
+        .detail-item .label {
+            color: #718096;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .detail-item .value {
+            color: #2d3748;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        /* Contact Section */
+        .contact-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #48bb78;
+        }
+        .contact-section h5 {
+            color: #22543d;
+            margin-bottom: 15px;
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .contact-value {
+            color: #22543d !important;
+            background: #c6f6d5;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: inline-block;
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Patient Contact Section */
+        .patient-contact {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #17a2b8;
+        }
+        .patient-contact h5 {
+            color: #0c5460;
+            margin-bottom: 15px;
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .patient-contact-value {
+            color: #0c5460 !important;
+            background: #bee5eb;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: inline-block;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .patient-section {
+            border: 2px solid #17a2b8;
+            background: linear-gradient(135deg, #d1ecf1 0%, #ffffff 100%);
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 60px 20px;
+            color: #718096;
+        }
+        .no-data-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Transaction History</h1>
+            <a href="/user/dashboard" class="back-btn">← Back to Dashboard</a>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ total_transactions }}</div>
+                <div class="stat-label">Total Transactions</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);">
+                <div class="stat-number">{{ successful_transactions }}</div>
+                <div class="stat-label">Approved</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                <div class="stat-number">{{ pending_transactions }}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #f56565 0%, #c53030 100%);">
+                <div class="stat-number">{{ failed_transactions }}</div>
+                <div class="stat-label">Rejected</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Your Transactions</h2>
+            {% if transactions and transactions|length > 0 %}
+            <div class="transactions-list">
+                {% for transaction in transactions %}
+                <div class="transaction-card {% if transaction[4] == 1 %}approved{% elif transaction[4] == 0 %}pending{% else %}rejected{% endif %}">
+                    <div class="transaction-header">
+                        <div class="organ-info">
+                            <span class="organ-badge">{{ transaction[5] if transaction[5] else 'Unknown' }}</span>
+                            <span class="organ-id">ID: {{ transaction[1] }}</span>
+                        </div>
+                        <div class="transaction-status">
+                            {% if transaction[4] == 1 %}
+                                <span class="status-badge status-success">✓ Approved</span>
+                            {% elif transaction[4] == 0 %}
+                                <span class="status-badge status-pending">⏳ Pending</span>
+                            {% else %}
+                                <span class="status-badge status-failed">✗ Rejected</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="transaction-date">📅 {{ transaction[3] }}</div>
+                    
+                    <div class="transaction-details">
+                        {# Patient Section - Show full details if user is donor OR if approved #}
+                        <div class="detail-section {% if current_user_id == transaction[25] %}patient-section{% endif %}">
+                            <h4>👤 Patient Information</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <span class="label">Name:</span>
+                                    <span class="value">{{ transaction[6] if transaction[6] else 'N/A' }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">ID:</span>
+                                    <span class="value">{{ transaction[0] }}</span>
+                                </div>
+                                {% if transaction[4] == 1 and current_user_id == transaction[25] %}
+                                {# User is donor - show full patient details #}
+                                <div class="detail-item">
+                                    <span class="label">City:</span>
+                                    <span class="value">{{ transaction[12] if transaction[12] else 'N/A' }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">Insurance:</span>
+                                    <span class="value">{{ '✓ Yes' if transaction[10] == 1 else '✗ No' }}</span>
+                                </div>
+                                <div class="detail-item full-width">
+                                    <span class="label">Reason:</span>
+                                    <span class="value">{{ transaction[14] if transaction[14] else 'N/A' }}</span>
+                                </div>
+                                <div class="detail-item full-width">
+                                    <span class="label">Doctor:</span>
+                                    <span class="value">Dr. {{ transaction[16] if transaction[16] else 'N/A' }}</span>
+                                </div>
+                                {% elif transaction[4] == 1 and current_user_id == transaction[24] %}
+                                {# User is patient - show basic info #}
+                                <div class="detail-item">
+                                    <span class="label">City:</span>
+                                    <span class="value">{{ transaction[12] if transaction[12] else 'N/A' }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">Insurance:</span>
+                                    <span class="value">{{ '✓ Yes' if transaction[10] == 1 else '✗ No' }}</span>
+                                </div>
+                                <div class="detail-item full-width">
+                                    <span class="label">Reason:</span>
+                                    <span class="value">{{ transaction[14] if transaction[14] else 'N/A' }}</span>
+                                </div>
+                                <div class="detail-item full-width">
+                                    <span class="label">Doctor:</span>
+                                    <span class="value">Dr. {{ transaction[16] if transaction[16] else 'N/A' }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            {# Patient Contact Info - Only show if user is donor AND approved #}
+                            {% if transaction[4] == 1 and current_user_id == transaction[25] %}
+                            <div class="contact-section">
+                                <h5>📞 Patient Contact Information</h5>
+                                <div class="detail-grid">
+                                    <div class="detail-item full-width">
+                                        <span class="label">Phone:</span>
+                                        <span class="value contact-value">{{ transaction[23] if transaction[23] else 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item full-width">
+                                        <span class="label">Address:</span>
+                                        <span class="value contact-value">
+                                            {% if transaction[21] or transaction[12] or transaction[22] %}
+                                                {{ transaction[21] if transaction[21] else '' }}{{ ', ' if transaction[21] and transaction[12] else '' }}{{ transaction[12] if transaction[12] else '' }}{{ ', ' if (transaction[21] or transaction[12]) and transaction[22] else '' }}{{ transaction[22] if transaction[22] else '' }}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {# Donor Section - Show full details if user is patient OR if approved #}
+                        {% if transaction[4] == 1 and current_user_id == transaction[24] %}
+                        {# User is patient - show full donor details #}
+                        <div class="detail-section donor-section">
+                            <h4>🩸 Donor Information</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <span class="label">Name:</span>
+                                    <span class="value">{{ transaction[7] if transaction[7] else 'N/A' }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">ID:</span>
+                                    <span class="value">{{ transaction[2] }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">City:</span>
+                                    <span class="value">{{ transaction[13] if transaction[13] else 'N/A' }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">Insurance:</span>
+                                    <span class="value">{{ '✓ Yes' if transaction[11] == 1 else '✗ No' }}</span>
+                                </div>
+                                <div class="detail-item full-width">
+                                    <span class="label">Donation Type:</span>
+                                    <span class="value">{{ transaction[15] if transaction[15] else 'N/A' }}</span>
+                                </div>
+                                <div class="detail-item full-width">
+                                    <span class="label">Organization:</span>
+                                    <span class="value">🏥 {{ transaction[17] if transaction[17] else 'N/A' }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-section">
+                                <h5>📞 Contact Information</h5>
+                                <div class="detail-grid">
+                                    <div class="detail-item full-width">
+                                        <span class="label">Phone:</span>
+                                        <span class="value contact-value">{{ transaction[20] if transaction[20] else 'N/A' }}</span>
+                                    </div>
+                                    <div class="detail-item full-width">
+                                        <span class="label">Address:</span>
+                                        <span class="value contact-value">
+                                            {% if transaction[18] or transaction[13] or transaction[19] %}
+                                                {{ transaction[18] if transaction[18] else '' }}{{ ', ' if transaction[18] and transaction[13] else '' }}{{ transaction[13] if transaction[13] else '' }}{{ ', ' if (transaction[18] or transaction[13]) and transaction[19] else '' }}{{ transaction[19] if transaction[19] else '' }}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% elif transaction[4] == 1 and current_user_id == transaction[25] %}
+                        {# User is donor - show basic donor info #}
+                        <div class="detail-section donor-section">
+                            <h4>🩸 Donor Information (You)</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <span class="label">Name:</span>
+                                    <span class="value">{{ transaction[7] if transaction[7] else 'N/A' }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">ID:</span>
+                                    <span class="value">{{ transaction[2] }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">City:</span>
+                                    <span class="value">{{ transaction[13] if transaction[13] else 'N/A' }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">Donation Type:</span>
+                                    <span class="value">{{ transaction[15] if transaction[15] else 'N/A' }}</span>
+                                </div>
+                                <div class="detail-item full-width">
+                                    <span class="label">Organization:</span>
+                                    <span class="value">🏥 {{ transaction[17] if transaction[17] else 'N/A' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        {# Pending or rejected - show minimal info #}
+                        <div class="detail-section donor-section-minimal">
+                            <h4>🩸 Donor Information</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <span class="label">Donor ID:</span>
+                                    <span class="value">{{ transaction[2] }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">Status:</span>
+                                    <span class="value">
+                                        {% if transaction[4] == 0 %}
+                                            Details will be visible once approved
+                                        {% else %}
+                                            Request was rejected
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-data">
+                <div class="no-data-icon">📋</div>
+                <h3>No Transactions Found</h3>
+                <p>You don't have any transaction history yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

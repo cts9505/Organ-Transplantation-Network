@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Organ - Organ Transplantation Network</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+        }
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .back-btn:hover {
+            background: #5568d3;
+        }
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            color: #4a5568;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .submit-btn {
+            background: #48bb78;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        .submit-btn:hover {
+            background: #38a169;
+        }
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+            border-left: 4px solid #48bb78;
+        }
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border-left: 4px solid #f56565;
+        }
+        .requests-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .request-item {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        .request-item h4 {
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        .request-detail {
+            color: #718096;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+        .request-detail strong {
+            color: #4a5568;
+        }
+        .no-requests {
+            text-align: center;
+            color: #718096;
+            padding: 40px;
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🫀 Request Organ Transplant</h1>
+            <a href="/user/dashboard" class="back-btn">← Back to Dashboard</a>
+        </div>
+
+        {% if success %}
+        <div class="alert alert-success">
+            ✓ Your organ request has been submitted successfully! A doctor will review your case soon.
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="alert alert-error">
+            ✗ Error submitting request. Please check all fields and try again.
+        </div>
+        {% endif %}
+
+        <div class="content-grid">
+            <div class="card">
+                <h2>Submit New Request</h2>
+                <form method="POST" action="/user/submit_organ_request">
+                    <div class="form-group">
+                        <label for="patient_id">Patient ID *</label>
+                        <input type="number" id="patient_id" name="patient_id" required 
+                               placeholder="Enter patient ID">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="organ_req">Organ Needed *</label>
+                        <select id="organ_req" name="organ_req" required>
+                            <option value="">-- Select Organ --</option>
+                            <option value="Kidney">Kidney</option>
+                            <option value="Liver">Liver</option>
+                            <option value="Heart">Heart</option>
+                            <option value="Lung">Lung</option>
+                            <option value="Pancreas">Pancreas</option>
+                            <option value="Cornea">Cornea</option>
+                            <option value="Bone Marrow">Bone Marrow</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reason">Reason for Transplant *</label>
+                        <textarea id="reason" name="reason" required 
+                                  placeholder="Describe medical condition..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="doctor_id">Assigned Doctor ID *</label>
+                        <input type="number" id="doctor_id" name="doctor_id" required 
+                               placeholder="Enter doctor ID">
+                    </div>
+
+                    <button type="submit" class="submit-btn">📝 Submit Request</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Your Pending Requests</h2>
+                <div class="requests-list">
+                    {% if my_requests and my_requests|length > 0 %}
+                        {% for request in my_requests %}
+                        <div class="request-item">
+                            <h4>{{ request[1] }} Transplant</h4>
+                            <div class="request-detail">
+                                <strong>Patient ID:</strong> {{ request[0] }}
+                            </div>
+                            <div class="request-detail">
+                                <strong>Reason:</strong> {{ request[2] if request[2] else 'Not specified' }}
+                            </div>
+                            <div class="request-detail">
+                                <strong>Doctor:</strong> {{ request[3] if request[3] else 'Not assigned' }}
+                            </div>
+                            <div class="request-detail">
+                                <strong>Department:</strong> {{ request[4] if request[4] else 'N/A' }}
+                            </div>
+                            <div class="request-detail">
+                                <strong>Hospital:</strong> {{ request[5] if request[5] else 'N/A' }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="no-requests">
+                            <p>📋 No pending organ requests</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card full-width" style="margin-top: 20px;">
+            <h2>Available Organs</h2>
+            <div class="info-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+                {% if available_organs and available_organs|length > 0 %}
+                    {% for organ in available_organs %}
+                    <div style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 20px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 32px; margin-bottom: 10px;">{{ organ[1] }}</div>
+                        <div style="font-size: 14px; opacity: 0.9;">Organ ID: {{ organ[0] }}</div>
+                        <div style="font-size: 13px; opacity: 0.8;">Donor: {{ organ[3] if organ[3] else 'Anonymous' }}</div>
+                        <div style="font-size: 12px; opacity: 0.7; margin-top: 5px;">{{ organ[4] if organ[4] else 'Unknown Hospital' }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="text-align: center; color: #718096; grid-column: 1/-1;">No organs currently available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
