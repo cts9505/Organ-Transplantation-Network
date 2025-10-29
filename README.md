@@ -150,7 +150,32 @@ pip install -r requirements.txt
 ```
 Flask==2.3.0
 mysql-connector-python==8.0.33
+python-dotenv==1.0.0
 ```
+
+### Configure Environment Variables
+
+Copy the example environment file and update with your credentials:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` file with your MySQL credentials:
+
+```env
+# Database Configuration
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_mysql_password
+DB_NAME=DBMS_PROJECT
+
+# Flask Configuration
+FLASK_SECRET_KEY=your_secret_key_here
+FLASK_DEBUG=True
+```
+
+⚠️ **Important**: Never commit the `.env` file to version control. It's already included in `.gitignore`.
 
 ---
 
@@ -191,23 +216,19 @@ mysql -u root -p DBMS_PROJECT < inserting_data/complete_demo_data.sql
 mysql -u root -p DBMS_PROJECT < inserting_data/insert_them_all.sql
 ```
 
-### 4. Database Configuration
-Update database credentials in `main.py` if needed:
-
-```python
-mydb = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="root",  # Change to your MySQL password
-    database="DBMS_PROJECT"
-)
-```
-
 ---
 
 ## ▶️ Running the Application
 
-### Start the Flask Server
+### 1. Install python-dotenv (if not already installed)
+```bash
+pip install python-dotenv
+```
+
+### 2. Configure your environment
+Make sure your `.env` file is properly configured with your MySQL credentials (see [Installation](#-installation) section).
+
+### 3. Start the Flask Server
 ```bash
 python3 main.py
 ```

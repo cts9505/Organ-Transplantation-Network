@@ -4,12 +4,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import sys
+from dotenv import load_dotenv
 
-# Read DB credentials from environment variables (recommended).
-# Defaults match the original values but you should set DB_PASSWORD in your shell.
+# Load environment variables from .env file
+load_dotenv()
+
+# Read DB credentials from environment variables
 DB_HOST = os.getenv('DB_HOST', 'localhost')
 DB_USER = os.getenv('DB_USER', 'root')
-DB_PASS = os.getenv('DB_PASSWORD', os.getenv('DB_PASS', 'root'))
+DB_PASS = os.getenv('DB_PASSWORD', 'root')
 DB_NAME = os.getenv('DB_NAME', 'DBMS_PROJECT')
 
 try:
@@ -20,12 +23,18 @@ try:
         database=DB_NAME
     )
     mycursor = mydb.cursor(buffered=True)
+    print(f'✅ Successfully connected to MySQL database: {DB_NAME}')
 except mysql.connector.Error as e:
-    print('\nERROR: Unable to connect to MySQL database.')
+    print('\n❌ ERROR: Unable to connect to MySQL database.')
     print('Details:', e)
-    print('\nPlease ensure MySQL is running and the credentials are correct.')
-    print('In zsh you can set credentials with:')
-    print("export DB_HOST=localhost DB_USER=root DB_PASSWORD='your_password' DB_NAME=DBMS_PROJECT")
+    print('\nPlease ensure:')
+    print('1. MySQL is running')
+    print('2. Database credentials in .env file are correct')
+    print('3. Database DBMS_PROJECT exists')
+    print('\nCurrent configuration:')
+    print(f'  Host: {DB_HOST}')
+    print(f'  User: {DB_USER}')
+    print(f'  Database: {DB_NAME}')
     sys.exit(1)
 
 app = Flask(__name__)
@@ -2166,7 +2175,12 @@ def admin_all_transactions():
                          rejected_transactions=rejected_transactions)
 
 if __name__ == "__main__":
-    app.secret_key = 'sec key'
+    # Load Flask configuration from environment variables
+    app.secret_key = os.getenv('FLASK_SECRET_KEY', 'sec key')
     app.config['SESSION_TYPE'] = 'filesystem'
-    app.run(debug=True)
+    
+    # Get debug mode from environment (default: True for development)
+    debug_mode = os.getenv('FLASK_DEBUG', 'True').lower() in ('true', '1', 'yes')
+    
+    app.run(debug=debug_mode)
 
